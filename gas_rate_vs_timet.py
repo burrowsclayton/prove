@@ -6,9 +6,9 @@ from Spotfire.Dxp.Data import *
 # the spreadsheet or database
 data_table_handle = Document.Data.Tables
 # Tablename is the name of the first table found
-tableName = [table.Name for table in data_table_handle][0]
+data_table_name = [table.Name for table in data_table_handle][0]
 # Selecting the data table, based on the table name found
-data_table_handle = data_table_handle[ tableName ]
+data_table_handle = data_table_handle[ data_table_name ]
 
 # Creating the scatter plot
 scatter_plot_handle = Document.ActivePageReference.Visuals.AddNew[ScatterPlot]()
@@ -19,7 +19,7 @@ scatter_plot_handle.YAxis.Expression = "[GasRate]"
 # Setiing the x axis to plot the column Number of days produced from the excel spreadsheet
 scatter_plot_handle.XAxis.Expression = "[Number of days produced]"
 # Setting the title of the scatter plot
-scatter_plot_handle.Title = tableName
+scatter_plot_handle.Title = data_table_name
 # Use Log scale for box x and y axis
 scatter_plot_handle.XAxis.UseLogTransform = True
 scatter_plot_handle.YAxis.UseLogTransform = True
