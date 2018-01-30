@@ -15,9 +15,9 @@ scatter_plot_handle = Document.ActivePageReference.Visuals.AddNew[ScatterPlot]()
 # Linking the data table with the newly created scatter plot
 scatter_plot_handle.Data.DataTableReference = data_table_handle
 # Setiing the y axis to plot the column GasRate from the excel spreadsheet
-scatter_plot_handle.YAxis.Expression = "[GasRate]"
+scatter_plot_handle.YAxis.Expression = "[GAS_RATE]"
 # Setiing the x axis to plot the column Number of days produced from the excel spreadsheet
-scatter_plot_handle.XAxis.Expression = "[Number of days produced]"
+scatter_plot_handle.XAxis.Expression = "[NUMBER_OF_DAYS_PRODUCED]"
 # Setting the title of the scatter plot
 scatter_plot_handle.Title = data_table_name
 # Use Log scale for box x and y axis
