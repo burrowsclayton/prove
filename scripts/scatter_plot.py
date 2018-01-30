@@ -18,7 +18,7 @@ scatter_plot_handle = Document.ActivePageReference.Visuals.AddNew[ScatterPlot]()
 scatter_plot_handle.Data.DataTableReference = data_table_handle
 
 # Setting the x and y axis of the scatter plot, and setting them to use a log scale
-scatter_plot_handle.YAxis.Expression = "[GAS_RATE]"
+scatter_plot_handle.YAxis.Expression = "[GAS_RATE_MSCF_PD]"
 scatter_plot_handle.XAxis.Expression = "[NUMBER_OF_DAYS_PRODUCED]"
 scatter_plot_handle.XAxis.UseLogTransform = True
 scatter_plot_handle.YAxis.UseLogTransform = True
