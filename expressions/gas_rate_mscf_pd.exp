@@ -1,0 +1,1 @@
+Sum([GAS_MSCF_PD_RATE]) OVER (Intersect([WEL_UID],[END_OF_MONTH_DATE]))

@@ -1,0 +1,1 @@
+Sum(If([DUPLICATE]="Original",[PRODUCING_DAYS],0)) OVER (Intersect([WEL_UID],AllPrevious([END_OF_MONTH_DATE])))

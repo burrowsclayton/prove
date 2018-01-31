@@ -1,0 +1,1 @@
+If([PRODUCING_DAYS]=0,"Ignore","Plot")
