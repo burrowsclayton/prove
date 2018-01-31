@@ -1,0 +1,1 @@
+If(Rank(Rowid(),"asc",[WEL_UID],[END_OF_MONTH_DATE])=1,"Original","Duplicate")
