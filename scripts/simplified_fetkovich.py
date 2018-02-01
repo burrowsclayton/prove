@@ -11,6 +11,7 @@ Plots the simplified fetkovich curve
 
 from Spotfire.Dxp.Application.Visuals import *
 from Spotfire.Dxp.Data import *
+import math
 
 # Get the data table (object that contains all data)
 data_table = Document.Data.Tables
@@ -43,3 +44,33 @@ for each in data_table.GetRows(row_selection, date_cursor, slope_cursor, gas_rat
   slope_hash[date_cursor.CurrentValue] = slope_cursor.CurrentValue
   gas_rate_hash[date_cursor.CurrentValue] = gas_rate_cursor.CurrentValue
   day_hash[date_cursor.CurrentValue] = days_cursor.CurrentValue
+
+quarter_slope, half_slope, one_slope = None, None, None
+state = "start"
+previous_slope = 0
+for key in sorted(slope_hash.iterkeys()):
+  if state is "start":
+    state = "quarter"
+  elif state is "quarter":
+    if abs(slope_hash[key]-previous_slope) >= 0.25:
+      quarter_slope = key
+      state = "half"
+  elif state is "half":
+    if abs(slope_hash[key]-previous_slope) >= 0.5:
+      half_slope = key
+      state = "one"
+  elif state is "one":
+    if abs(slope_hash[key]-previous_slope) >= 1:
+      one_slope = key
+      state = "fin"
+
+  previous_slope = slope_hash[key]
+
+print quarter_slope, half_slope, one_slope
+
+# Line equation: log(y) = k*log(x) + log(a)
+quarter_slope_a = math.exp(math.log(gas_rate_hash[quarter_slope])+0.25*math.log(day_hash[quarter_slope]))
+half_slope_a = math.exp(math.log(gas_rate_hash[half_slope])+0.5*math.log(day_hash[half_slope]))
+one_slope_a = math.exp(math.log(gas_rate_hash[one_slope])+1*math.log(day_hash[one_slope]))
+
+print quarter_slope_a, half_slope_a, one_slope_a
