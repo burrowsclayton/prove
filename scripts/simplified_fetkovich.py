@@ -22,7 +22,7 @@ data_table = data_table[ data_table_name ]
 scatter_plot = None
 for visual in Document.ActivePageReference.Visuals:
   if "ScatterPlot" in str(visual.TypeId):
-    scatter_plot = visual
+    scatter_plot = visual.As[ScatterPlot]()
 
 # Selecting the filtered rows for line calculations
 # Creating the cursors to use in our column selections
@@ -66,11 +66,18 @@ for key in sorted(slope_hash.iterkeys()):
 
   previous_slope = slope_hash[key]
 
-print quarter_slope, half_slope, one_slope
-
 # Line equation: log(y) = k*log(x) + log(a)
+# Working out the y intercept
 quarter_slope_a = math.exp(math.log(gas_rate_hash[quarter_slope])+0.25*math.log(day_hash[quarter_slope]))
 half_slope_a = math.exp(math.log(gas_rate_hash[half_slope])+0.5*math.log(day_hash[half_slope]))
 one_slope_a = math.exp(math.log(gas_rate_hash[one_slope])+1*math.log(day_hash[one_slope]))
 
-print quarter_slope_a, half_slope_a, one_slope_a
+# Creating the line expressions
+quater_slope_expression = "[x]*-.25+log10(" + str(quarter_slope_a) + ")"
+half_slope_expression = "[x]*-.5+log10(" + str(half_slope_a) + ")"
+one_slope_expression = "[x]*-1+log10(" + str(one_slope_a) + ")"
+
+# Plotting the lines onto the ScatterPlot
+scatter_plot.FittingModels.AddCurve(quater_slope_expression)
+scatter_plot.FittingModels.AddCurve(half_slope_expression)
+scatter_plot.FittingModels.AddCurve(one_slope_expression)
