@@ -78,6 +78,11 @@ half_slope_expression = "[x]*-.5+log10(" + str(half_slope_a) + ")"
 one_slope_expression = "[x]*-1+log10(" + str(one_slope_a) + ")"
 
 # Plotting the lines onto the ScatterPlot
-scatter_plot.FittingModels.AddCurve(quater_slope_expression)
-scatter_plot.FittingModels.AddCurve(half_slope_expression)
-scatter_plot.FittingModels.AddCurve(one_slope_expression)
+quarter_slope_curve = scatter_plot.FittingModels.AddCurve(quater_slope_expression)
+half_slope_curve = scatter_plot.FittingModels.AddCurve(half_slope_expression)
+one_slope_curve = scatter_plot.FittingModels.AddCurve(one_slope_expression)
+
+quarter_slope_curve.Curve.CustomDisplayName = "QUARTER SLOPE"
+half_slope_curve.Curve.CustomDisplayName = "HALF SLOPE"
+one_slope_curve.Curve.CustomDisplayName = "ONE SLOPE"
+
