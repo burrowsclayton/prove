@@ -12,6 +12,7 @@ Plots the simplified fetkovich curve
 from Spotfire.Dxp.Application.Visuals import *
 from Spotfire.Dxp.Data import *
 import math
+import clr
 
 # Get the data table (object that contains all data)
 data_table = Document.Data.Tables
@@ -48,7 +49,7 @@ for each in data_table.GetRows(row_selection, date_cursor, slope_cursor, gas_rat
 quarter_slope, half_slope, one_slope = None, None, None
 state = "start"
 previous_slope = 0
-for key in sorted(slope_hash.iterkeys()):
+for key in sorted(list(slope_hash.iterkeys())[7:] ):
   if state is "start":
     state = "quarter"
   elif state is "quarter":
