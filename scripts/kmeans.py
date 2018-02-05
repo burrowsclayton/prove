@@ -85,6 +85,12 @@ class KMeansClustering:
       copy.append((centroid[0], centroid[1]))
     return copy
 
+def min(x,y):
+  return x if x < y else y
+
+def max(x,y):
+  return x if x > y else y
+
 # Get the data table (object that contains all data)
 data_table = Document.Data.Tables
 data_table_name = [table.Name for table in data_table][0]
@@ -111,12 +117,28 @@ row_selection = filtering.GetSelection(data_table).AsIndexSet()
 
 # Extracting values from columns
 slope, gas_rate, days = [], [], []
-
+# Keep track of max and min values which will be used for normalisation
+max_slope, max_rate = Double.NegativeInfinity, Double.NegativeInfinity 
+min_slope, min_rate = Double.PositiveInfinity, Double.PositiveInfinity
 for each in data_table.GetRows(row_selection, slope_cursor, gas_rate_cursor, days_cursor):
   if str(slope_cursor.CurrentValue) != '-1.#IND' and  str(slope_cursor.CurrentValue) != '1.#INF':
+    max_slope = max(slope_cursor.CurrentValue, max_slope)
+    min_slope = min(slope_cursor.CurrentValue, min_slope)
+    max_rate = max(gas_rate_cursor.CurrentValue, max_rate)
+    min_rate = min(gas_rate_cursor.CurrentValue, min_rate)
+
     slope.append(slope_cursor.CurrentValue)
     gas_rate.append(gas_rate_cursor.CurrentValue)
     days.append(days_cursor.CurrentValue)
+
+# Normalising the data values using Min-Max/Feature Scaling technique
+for i,point in enumerate(zip(slope, gas_rate)):
+  temp_slope = point[0]
+  temp_rate = point[1]
+  temp_slope = (temp_slope-min_slope)/(max_slope-min_slope)
+  temp_rate = (temp_rate-min_rate)/(max_rate-min_rate)
+  slope[i] = temp_slope
+  gas_rate[i] = temp_rate
 
 # Now using kmeans to work out centroids
 kmeans = KMeansClustering(slope, gas_rate, 3)
@@ -127,8 +149,8 @@ row_values = []
 for centroid in centroids:
   index = None
   smallest_distance = Double.PositiveInfinity
-  for i,rate in enumerate(gas_rate):
-    diff = abs(rate - centroid[1])
+  for i,point in enumerate(zip(slope, gas_rate)):
+    diff = kmeans.euclidean_distance(point, centroid)
     if diff < smallest_distance:
       smallest_distance = diff
       index = i
