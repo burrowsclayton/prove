@@ -7,7 +7,7 @@ of clusters (k).
 """
 from Spotfire.Dxp.Application.Visuals import *
 from Spotfire.Dxp.Data import *
-from System import Random
+from System import Random, Double
 import math
 
 class KMeansClustering:
@@ -57,7 +57,7 @@ class KMeansClustering:
   # to the point
   def assign_points_to_centroid(self):
     for i, point in enumerate(self.points):
-      distance = float("inf")
+      distance = Double.PositiveInfinity
       for j, centroid in enumerate(self.centroids):
         if self.euclidean_distance(point, centroid) < distance:
           distance = self.euclidean_distance(point, centroid)
@@ -113,7 +113,7 @@ row_selection = filtering.GetSelection(data_table).AsIndexSet()
 slope, gas_rate, days = [], [], []
 
 for each in data_table.GetRows(row_selection, slope_cursor, gas_rate_cursor, days_cursor):
-  if str(slope_cursor.CurrentValue) != '-1.#IND':
+  if str(slope_cursor.CurrentValue) != '-1.#IND' and  str(slope_cursor.CurrentValue) != '1.#INF':
     slope.append(slope_cursor.CurrentValue)
     gas_rate.append(gas_rate_cursor.CurrentValue)
     days.append(days_cursor.CurrentValue)
@@ -121,3 +121,36 @@ for each in data_table.GetRows(row_selection, slope_cursor, gas_rate_cursor, day
 # Now using kmeans to work out centroids
 kmeans = KMeansClustering(slope, gas_rate, 3)
 centroids = kmeans.run()
+
+# Finding closest data point
+row_values = []
+for centroid in centroids:
+  index = None
+  smallest_distance = Double.PositiveInfinity
+  for i,rate in enumerate(gas_rate):
+    diff = abs(rate - centroid[1])
+    if diff < smallest_distance:
+      smallest_distance = diff
+      index = i
+  row_values.append((gas_rate[index], days[index]))
+
+# Sorted based on the number of days
+# Note: This is dependent on days being the second variable in the tuple
+sorted_row_values = sorted(row_values, key=lambda row_values: row_values[1]) 
+quarter_slope_a = math.exp(math.log(sorted_row_values[0][0])+0.25*math.log(sorted_row_values[0][1]))
+half_slope_a = math.exp(math.log(sorted_row_values[1][0])+0.5*math.log(sorted_row_values[1][1]))
+one_slope_a = math.exp(math.log(sorted_row_values[2][0])+1*math.log(sorted_row_values[2][1]))
+
+# Creating the line expressions
+quater_slope_expression = "[x]*-.25+log10(" + str(quarter_slope_a) + ")"
+half_slope_expression = "[x]*-.5+log10(" + str(half_slope_a) + ")"
+one_slope_expression = "[x]*-1+log10(" + str(one_slope_a) + ")"
+
+# Plotting the lines onto the ScatterPlot
+quarter_slope_curve = scatter_plot.FittingModels.AddCurve(quater_slope_expression)
+half_slope_curve = scatter_plot.FittingModels.AddCurve(half_slope_expression)
+one_slope_curve = scatter_plot.FittingModels.AddCurve(one_slope_expression)
+
+quarter_slope_curve.Curve.CustomDisplayName = "QUARTER SLOPE"
+half_slope_curve.Curve.CustomDisplayName = "HALF SLOPE"
+one_slope_curve.Curve.CustomDisplayName = "ONE SLOPE"

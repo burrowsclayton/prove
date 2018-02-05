@@ -15,10 +15,10 @@ from Spotfire.Dxp.Application.Scripting import ScriptDefinition
 import clr
 
 scatter_plot = clr.Reference[ScriptDefinition]()
-simplified_fetkovich = clr.Reference[ScriptDefinition]()
+kmeans = clr.Reference[ScriptDefinition]()
 Document.ScriptManager.TryGetScript("scatter_plot", scatter_plot)
-Document.ScriptManager.TryGetScript("simplified_fetkovich", simplified_fetkovich)
+Document.ScriptManager.TryGetScript("kmeans", kmeans)
 
 Document.ScriptManager.ExecuteScript(scatter_plot.ScriptCode, {})
-
+Document.ScriptManager.ExecuteScript(kmeans.ScriptCode, {})
 
