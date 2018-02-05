@@ -144,18 +144,25 @@ for i,point in enumerate(zip(slope, gas_rate)):
 kmeans = KMeansClustering(slope, gas_rate, 3)
 centroids = kmeans.run()
 
+# Convert the centroids back to un-normalized values
+#for i,centroid in enumerate(centroids):
+#  s,g = centroid[0], centroid[1]
+#  s = s*(max_slope-min_slope)+min_slope
+#  g = g*(max_rate-min_rate)+min_rate
+#  centroids[i] = (s,g)
+
 # Finding closest data point
 row_values = []
 for centroid in centroids:
   index = None
   smallest_distance = Double.PositiveInfinity
-  for i,point in enumerate(zip(slope, gas_rate)):
-    diff = kmeans.euclidean_distance(point, centroid)
+  for i,rate in enumerate(gas_rate):
+    diff = abs(centroid[1] - rate)
     if diff < smallest_distance:
       smallest_distance = diff
       index = i
-  row_values.append((gas_rate[index], days[index]))
-
+  row_values.append((gas_rate[index]*(max_rate-min_rate)+min_rate, days[index]))
+print row_values
 # Sorted based on the number of days
 # Note: This is dependent on days being the second variable in the tuple
 sorted_row_values = sorted(row_values, key=lambda row_values: row_values[1]) 
