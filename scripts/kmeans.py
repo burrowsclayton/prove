@@ -97,20 +97,21 @@ class KMeansClustering:
   # Applies Min-Max/Feature Scaling normalisation techniques
   def minmax_normalise_data(self):
     self.normalised = True
+    slope, rate = 0, 1
     # Finding the max and min values of each attribute (slope, rate)
-    for i, point in enumerate(self.points):
-      # Slope is the first value of a point and the rate is the second value
-      self.max_slope = max(point[0], self.max_slope)
-      self.min_slope = min(point[0], self.min_slope)
-      self.max_rate = max(point[1], self.max_rate)
-      self.min_rate = min(point[1], self.min_rate)
+    # Use lambda to allow us to search the entire list at once which will
+    # then return a tuple variable. which is why we index the result
+    self.max_slope = max(self.points, key=lambda points: points[slope])[slope]
+    self.min_slope = min(self.points, key=lambda points: points[slope])[slope]
+    self.max_rate = max(self.points, key=lambda points: points[rate])[rate]
+    self.min_rate = min(self.points, key=lambda points: points[rate])[rate]
 
     # Applying the normalisation
     # v' = (v-min(e))/(max(e)-min(e))
     # where min(e) and max(e) are the max and min value of attribute e
     for i, point in enumerate(self.points):
-      s = (point[0]-self.min_slope)/(self.max_slope-self.min_slope)
-      r = (point[1]-self.min_rate)/(self.max_rate-self.min_rate)
+      s = (point[slope]-self.min_slope)/(self.max_slope-self.min_slope)
+      r = (point[rate]-self.min_rate)/(self.max_rate-self.min_rate)
       self.points[i] = (s,r,0)
 
   # Unnormalises the centroid values
