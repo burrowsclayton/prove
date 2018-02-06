@@ -86,4 +86,3 @@ one_slope_curve = scatter_plot.FittingModels.AddCurve(one_slope_expression)
 quarter_slope_curve.Curve.CustomDisplayName = "QUARTER SLOPE"
 half_slope_curve.Curve.CustomDisplayName = "HALF SLOPE"
 one_slope_curve.Curve.CustomDisplayName = "ONE SLOPE"
-

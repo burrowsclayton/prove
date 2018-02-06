@@ -21,4 +21,3 @@ Document.ScriptManager.TryGetScript("kmeans", kmeans)
 
 Document.ScriptManager.ExecuteScript(scatter_plot.ScriptCode, {})
 Document.ScriptManager.ExecuteScript(kmeans.ScriptCode, {})
-
