@@ -11,16 +11,25 @@ from System import Random, Double
 import math
 
 class KMeansClustering:
+  # k = number of clusters
   def __init__(self, x_values, y_values, k, iterations=1000):
     self.k = k
-    # Initialises the points and sets the centroids to -1
-    self.points = zip(x_values, y_values, [-1]*len(x_values))
+    # Initialises the points and sets the centroids index to 0
+    # The third variable is an index into the centroid array
+    self.points = zip(x_values, y_values, [0]*len(x_values))
     self.centroids = []
     self.max_iterations = iterations
+    # Used for data normalisation
+    self.min_slope = Double.PositiveInfinity
+    self.min_rate = Double.PositiveInfinity
+    self.max_slope = Double.NegativeInfinity
+    self.max_rate = Double.NegativeInfinity
+    self.normalised = False
     
-  # Runs the algorithm
+  # Runs the k-means algorithm
   def run(self):
     self.initialise_centroids()
+    # Used to keep track of the convergence of our centroids
     old_centroids = [[0,0]]*self.k
     iterations = 0
     while ((iterations < self.max_iterations) & 
@@ -30,11 +39,11 @@ class KMeansClustering:
       self.assign_points_to_centroid()
       self.calculate_new_centroids()
       iterations += 1
-    return self.centroids
+    return self.unnormalised_centroids() if self.normalised else self.centroids
   
-  # initalises centroids to random values between (0.0, 1.0]
+  # initalises centroids to random values between [0.0, 1.0]
   def initialise_centroids(self):
-    # When created it will be seed based on current time
+    # Random class is created on time-dependent seed value
     rand = Random()
     for i in range(0,self.k):
       self.centroids.append([rand.NextDouble(), rand.NextDouble()])
@@ -65,7 +74,7 @@ class KMeansClustering:
           self.points[i] = (point[0], point[1], j)
   
   # Calculates the new centroid positions, by assigning it the
-  # average of each point
+  # average of each point that is associated with it
   def calculate_new_centroids(self):
     for i, centroid in enumerate(self.centroids):
       sum_x, sum_y, n = 0, 0, 0
@@ -85,11 +94,38 @@ class KMeansClustering:
       copy.append((centroid[0], centroid[1]))
     return copy
 
-def min(x,y):
-  return x if x < y else y
+  # Applies Min-Max/Feature Scaling normalisation techniques
+  def minmax_normalise_data(self):
+    self.normalised = True
+    slope, rate = 0, 1
+    # Finding the max and min values of each attribute (slope, rate)
+    # Use lambda to allow us to search the entire list at once which will
+    # then return a tuple variable. which is why we index the result
+    self.max_slope = max(self.points, key=lambda points: points[slope])[slope]
+    self.min_slope = min(self.points, key=lambda points: points[slope])[slope]
+    self.max_rate = max(self.points, key=lambda points: points[rate])[rate]
+    self.min_rate = min(self.points, key=lambda points: points[rate])[rate]
 
-def max(x,y):
-  return x if x > y else y
+    # Applying the normalisation
+    # v' = (v-min(e))/(max(e)-min(e))
+    # where min(e) and max(e) are the max and min value of attribute e
+    for i, point in enumerate(self.points):
+      s = (point[slope]-self.min_slope)/(self.max_slope-self.min_slope)
+      r = (point[rate]-self.min_rate)/(self.max_rate-self.min_rate)
+      self.points[i] = (s,r,0)
+
+  # Unnormalises the centroid values
+  def unnormalised_centroids(self):
+    unnormalised_centroids = []
+    # Must apply the oppsoite of the normalisation equation
+    # v = v'*(max(e) - min(e)) + min(e)
+    for centroid in self.centroids:
+      s = centroid[0]
+      g = centroid[1]
+      s = s*(self.max_slope-self.min_slope)+self.min_slope
+      g = g*(self.max_rate-self.min_rate)+self.min_rate
+      unnormalised_centroids.append((s,g))
+    return unnormalised_centroids
 
 # Get the data table (object that contains all data)
 data_table = Document.Data.Tables
@@ -102,75 +138,60 @@ for visual in Document.ActivePageReference.Visuals:
   if "ScatterPlot" in str(visual.TypeId):
     scatter_plot = visual.As[ScatterPlot]()
 
-# Selecting the filtered rows for line calculations
 # Creating the cursors to use in our column selections
+# Refer to the DataValueCursor in the Spotfire API
 columns = data_table.Columns
 slope_cursor = DataValueCursor.Create(columns["SLOPE"])
 gas_rate_cursor = DataValueCursor.Create(columns["GAS_RATE_MSCF_PD"])
 days_cursor = DataValueCursor.Create(columns["NUMBER_OF_DAYS_PRODUCED"])
 
 # Creating a row selection that allows us to only get the rows that match
-# the current filtering options
+# the current filtering options (Field, well name, duplicate, non-zero)
 filtering = Document.ActiveFilteringSelectionReference
 # The selection needs to be converted to an Enumerable type to be used in GetRows
 row_selection = filtering.GetSelection(data_table).AsIndexSet()
 
 # Extracting values from columns
 slope, gas_rate, days = [], [], []
-# Keep track of max and min values which will be used for normalisation
-max_slope, max_rate = Double.NegativeInfinity, Double.NegativeInfinity 
-min_slope, min_rate = Double.PositiveInfinity, Double.PositiveInfinity
 for each in data_table.GetRows(row_selection, slope_cursor, gas_rate_cursor, days_cursor):
+  # Must make sure that the numbers are valid otherwise it will not work with k-means
   if str(slope_cursor.CurrentValue) != '-1.#IND' and  str(slope_cursor.CurrentValue) != '1.#INF':
-    max_slope = max(slope_cursor.CurrentValue, max_slope)
-    min_slope = min(slope_cursor.CurrentValue, min_slope)
-    max_rate = max(gas_rate_cursor.CurrentValue, max_rate)
-    min_rate = min(gas_rate_cursor.CurrentValue, min_rate)
-
     slope.append(slope_cursor.CurrentValue)
     gas_rate.append(gas_rate_cursor.CurrentValue)
     days.append(days_cursor.CurrentValue)
 
-# Normalising the data values using Min-Max/Feature Scaling technique
-for i,point in enumerate(zip(slope, gas_rate)):
-  temp_slope = point[0]
-  temp_rate = point[1]
-  temp_slope = (temp_slope-min_slope)/(max_slope-min_slope)
-  temp_rate = (temp_rate-min_rate)/(max_rate-min_rate)
-  slope[i] = temp_slope
-  gas_rate[i] = temp_rate
-
 # Now using kmeans to work out centroids
 kmeans = KMeansClustering(slope, gas_rate, 3)
+# We also want out data to be normalised
+kmeans.minmax_normalise_data()
 centroids = kmeans.run()
 
-# Convert the centroids back to un-normalized values
-#for i,centroid in enumerate(centroids):
-#  s,g = centroid[0], centroid[1]
-#  s = s*(max_slope-min_slope)+min_slope
-#  g = g*(max_rate-min_rate)+min_rate
-#  centroids[i] = (s,g)
-
-# Finding closest data point
-row_values = []
+# Finding closest data point to the centroids
+# We will use the data points that map closest to a centroid for use in the line equation
+closest_points = []
 for centroid in centroids:
   index = None
-  smallest_distance = Double.PositiveInfinity
-  for i,rate in enumerate(gas_rate):
-    diff = abs(centroid[1] - rate)
-    if diff < smallest_distance:
-      smallest_distance = diff
+  smallest_diff = Double.PositiveInfinity
+  for i,point in enumerate(zip(slope,gas_rate)):
+    # The 'closeness' is the euclidean distance between the points and centroids
+    diff = math.sqrt((centroid[0] - point[0])**2+(centroid[1] - point[1])**2)
+    if diff < smallest_diff:
+      smallest_diff = diff
       index = i
-  row_values.append((gas_rate[index]*(max_rate-min_rate)+min_rate, days[index]))
-print row_values
+  closest_points.append((gas_rate[index], days[index]))
+
 # Sorted based on the number of days
 # Note: This is dependent on days being the second variable in the tuple
-sorted_row_values = sorted(row_values, key=lambda row_values: row_values[1]) 
-quarter_slope_a = math.exp(math.log(sorted_row_values[0][0])+0.25*math.log(sorted_row_values[0][1]))
-half_slope_a = math.exp(math.log(sorted_row_values[1][0])+0.5*math.log(sorted_row_values[1][1]))
-one_slope_a = math.exp(math.log(sorted_row_values[2][0])+1*math.log(sorted_row_values[2][1]))
+# We sort based on the number of days because the smallest value of days indicates the point belongs to
+# the slope of a quarter, the second highest belongs to a line with slope 1/2 etc.
+sorted_closest_points = sorted(closest_points, key=lambda closest_points: closest_points[1]) 
+quarter_slope_a = math.exp(math.log(sorted_closest_points[0][0])+0.25*math.log(sorted_closest_points[0][1]))
+half_slope_a = math.exp(math.log(sorted_closest_points[1][0])+0.5*math.log(sorted_closest_points[1][1]))
+one_slope_a = math.exp(math.log(sorted_closest_points[2][0])+1*math.log(sorted_closest_points[2][1]))
 
 # Creating the line expressions
+# log(y) = log(x)*b+log(a)
+# b is the slope, a is the y-intercept
 quater_slope_expression = "[x]*-.25+log10(" + str(quarter_slope_a) + ")"
 half_slope_expression = "[x]*-.5+log10(" + str(half_slope_a) + ")"
 one_slope_expression = "[x]*-1+log10(" + str(one_slope_a) + ")"
@@ -180,6 +201,7 @@ quarter_slope_curve = scatter_plot.FittingModels.AddCurve(quater_slope_expressio
 half_slope_curve = scatter_plot.FittingModels.AddCurve(half_slope_expression)
 one_slope_curve = scatter_plot.FittingModels.AddCurve(one_slope_expression)
 
+# Naming the cruves
 quarter_slope_curve.Curve.CustomDisplayName = "QUARTER SLOPE"
 half_slope_curve.Curve.CustomDisplayName = "HALF SLOPE"
 one_slope_curve.Curve.CustomDisplayName = "ONE SLOPE"
