@@ -1,29 +1,51 @@
-<div class="container-fluid">
+<style>
+  .lg_tbl_heading {
+    font-size: 15pt;
+  }
+
+  .md_tbl_heading{
+    font-size: 8.5pt;
+  }
+
+  .sm_text {
+    font-size: 9pt;
+  }
+  .verd{
+    font-family: Verdana, Geneva, Tahoma, sans-serif; 
+  }
+</style>
+
+<div class="verd">
+  <div>
+    <table>
+      <th class="lg_tbl_heading">Select a field:</th>
+      <th class="lg_tbl_heading">Select a well:</th>
+      <tr>
+        <td><SpotfireControl id="41fc853dd4154afca5f27e9ebc795de0" /></td>
+        <td><SpotfireControl id="c23ed2c4f0f24b759fa9ed05f808e68c" /></td>
+        <td></td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="padding-top: 15pt">
   <SpotfireControl id="d801b696ad4e4159b9539f8bdfd8db09" />
-</div>
+  </div>
 
-<div class="container-fluid">
-  <table>
-    <h2>Type "Well Name" (include quotes):</h2>
-    <tr>
-      <td><SpotfireControl id="c23ed2c4f0f24b759fa9ed05f808e68c" /></td>
-    </tr>
-  </table>
-</div>
-
-<div class="container-fluid">
-  <h3>Other filter options:</h3>
-  <p>Note: The only options that should be selected are Plot and Original.</p>
-  <table>
-    <th>Plot should be selected</th>
-    <th>Original should be selected</th>
-    <tr>
-      <td>
-          <SpotfireControl id="b2265ea4400f4892a2844125a0dedc84" />
-      </td>
-      <td>
-          <SpotfireControl id="6dd93ff2728e4bae83c29e8b9d27a345" />
-      </td>
-    </tr>
-  </table>
+  <div>
+    <h2>Other filter options:</h2>
+    <p class="sm_text">Note: The only options that should be selected are Plot and Original.</p>
+    <table>
+      <th class="md_tbl_heading">Non-zero should be selected</th>
+      <th class="md_tbl_heading">Original should be selected</th>
+      <tr>
+        <td>
+            <SpotfireControl id="b2265ea4400f4892a2844125a0dedc84" />
+        </td>
+        <td>
+            <SpotfireControl id="6dd93ff2728e4bae83c29e8b9d27a345" />
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
