@@ -213,3 +213,9 @@ red = Color.FromArgb(255, 255, 0, 0)
 quarter_slope_curve.Curve.Color = green
 half_slope_curve.Curve.Color = orange
 one_slope_curve.Curve.Color = red
+
+# Changing the style of each line
+# Defaults to single line
+quarter_slope_curve.Curve.LineStyle = LineStyle().Dot
+half_slope_curve.Curve.LineStyle = LineStyle().Dash
+one_slope_curve.Curve.LineStyle = LineStyle()
