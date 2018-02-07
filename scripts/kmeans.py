@@ -146,6 +146,11 @@ if scatter_plot == None:
   # If no scatter plot has been created then we will not attempt k-means
   MessageBox.Show("No scatter plot has been detected.\nPlease press ProVe Analysis after selecting a well.\nCheers.", "No Scatter Plot")
 else:
+  # Disables all current curves
+  for fm in scatter_plot.FittingModels:
+    if str(fm.TypeId) == "TypeIdentifier:Spotfire.ReferenceCurveFittingModel":
+      fm.Enabled = False
+
   # Creating the cursors to use in our column selections
   # Refer to the DataValueCursor in the Spotfire API
   columns = data_table.Columns
