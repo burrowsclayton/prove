@@ -11,12 +11,14 @@ This script resets the WELL_NAME and FIELD_NAME filters
 from Spotfire.Dxp.Data import *
 from Spotfire.Dxp.Application.Filters import *
 
-data_table = Document.Data.Tables
-data_table_name = [table.Name for table in data_table][0]
-data_table = data_table[ data_table_name ]
+# Getting the data table object
+table_name = "Monthly Production information link"
+data_table = Document.Data.Tables[table_name]
 
+# Resets all filters in list
 filters_to_reset = ["WELL_NAME","FIELD_NAME"]
 
+# loop through every filter in document and reset if in the filter_to_reset list
 for filtering_scheme in Document.FilteringSchemes:
   for filter in filtering_scheme[data_table]:
     if filter.Name in filters_to_reset:
