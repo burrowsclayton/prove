@@ -10,6 +10,10 @@ from Spotfire.Dxp.Data import *
 from System import Random, Double
 from System.Drawing import Color
 import math
+import sys
+import clr
+clr.AddReference("System.Windows.Forms")
+from System.Windows.Forms import MessageBox
 
 class KMeansClustering:
   # k = number of clusters
@@ -138,84 +142,88 @@ for visual in Document.ActivePageReference.Visuals:
   if "ScatterPlot" in str(visual.TypeId):
     scatter_plot = visual.As[ScatterPlot]()
 
-# Creating the cursors to use in our column selections
-# Refer to the DataValueCursor in the Spotfire API
-columns = data_table.Columns
-slope_cursor = DataValueCursor.Create(columns["SLOPE"])
-gas_rate_cursor = DataValueCursor.Create(columns["GAS_RATE_MSCF_PD"])
-days_cursor = DataValueCursor.Create(columns["NUMBER_OF_DAYS_PRODUCED"])
+if scatter_plot == None:
+  # If no scatter plot has been created then we will not attempt k-means
+  MessageBox.Show("No scatter plot has been detected.\nPlease press ProVe Analysis after selecting a well.\nCheers.", "No Scatter Plot")
+else:
+  # Creating the cursors to use in our column selections
+  # Refer to the DataValueCursor in the Spotfire API
+  columns = data_table.Columns
+  slope_cursor = DataValueCursor.Create(columns["SLOPE"])
+  gas_rate_cursor = DataValueCursor.Create(columns["GAS_RATE_MSCF_PD"])
+  days_cursor = DataValueCursor.Create(columns["NUMBER_OF_DAYS_PRODUCED"])
 
-# Creating a row selection that allows us to only get the rows that match
-# the current filtering options (Field, well name, duplicate, non-zero)
-filtering = Document.ActiveFilteringSelectionReference
-# The selection needs to be converted to an Enumerable type to be used in GetRows
-row_selection = filtering.GetSelection(data_table).AsIndexSet()
+  # Creating a row selection that allows us to only get the rows that match
+  # the current filtering options (Field, well name, duplicate, non-zero)
+  filtering = Document.ActiveFilteringSelectionReference
+  # The selection needs to be converted to an Enumerable type to be used in GetRows
+  row_selection = filtering.GetSelection(data_table).AsIndexSet()
 
-# Extracting values from columns
-slope, gas_rate, days = [], [], []
-for each in data_table.GetRows(row_selection, slope_cursor, gas_rate_cursor, days_cursor):
-  # Must make sure that the numbers are valid otherwise it will not work with k-means
-  if str(slope_cursor.CurrentValue) != '-1.#IND' and  str(slope_cursor.CurrentValue) != '1.#INF':
-    slope.append(slope_cursor.CurrentValue)
-    gas_rate.append(gas_rate_cursor.CurrentValue)
-    days.append(days_cursor.CurrentValue)
+  # Extracting values from columns
+  slope, gas_rate, days = [], [], []
+  for each in data_table.GetRows(row_selection, slope_cursor, gas_rate_cursor, days_cursor):
+    # Must make sure that the numbers are valid otherwise it will not work with k-means
+    if str(slope_cursor.CurrentValue) != '-1.#IND' and  str(slope_cursor.CurrentValue) != '1.#INF':
+      slope.append(slope_cursor.CurrentValue)
+      gas_rate.append(gas_rate_cursor.CurrentValue)
+      days.append(days_cursor.CurrentValue)
 
-# Now using kmeans to work out centroids
-kmeans = KMeansClustering(slope, gas_rate, 3)
-# We also want out data to be normalised
-kmeans.minmax_normalise_data()
-centroids = kmeans.run()
+  # Now using kmeans to work out centroids
+  kmeans = KMeansClustering(slope, gas_rate, 3)
+  # We also want out data to be normalised
+  kmeans.minmax_normalise_data()
+  centroids = kmeans.run()
 
-# Finding closest data point to the centroids
-# We will use the data points that map closest to a centroid for use in the line equation
-closest_points = []
-for centroid in centroids:
-  index = None
-  smallest_diff = Double.PositiveInfinity
-  for i,point in enumerate(zip(slope,gas_rate)):
-    # The 'closeness' is the euclidean distance between the points and centroids
-    diff = math.sqrt((centroid[0] - point[0])**2+(centroid[1] - point[1])**2)
-    if diff < smallest_diff:
-      smallest_diff = diff
-      index = i
-  closest_points.append((gas_rate[index], days[index]))
+  # Finding closest data point to the centroids
+  # We will use the data points that map closest to a centroid for use in the line equation
+  closest_points = []
+  for centroid in centroids:
+    index = None
+    smallest_diff = Double.PositiveInfinity
+    for i,point in enumerate(zip(slope,gas_rate)):
+      # The 'closeness' is the euclidean distance between the points and centroids
+      diff = math.sqrt((centroid[0] - point[0])**2+(centroid[1] - point[1])**2)
+      if diff < smallest_diff:
+        smallest_diff = diff
+        index = i
+    closest_points.append((gas_rate[index], days[index]))
 
-# Sorted based on the number of days
-# Note: This is dependent on days being the second variable in the tuple
-# We sort based on the number of days because the smallest value of days indicates the point belongs to
-# the slope of a quarter, the second highest belongs to a line with slope 1/2 etc.
-sorted_closest_points = sorted(closest_points, key=lambda closest_points: closest_points[1]) 
-quarter_slope_a = math.exp(math.log(sorted_closest_points[0][0])+0.25*math.log(sorted_closest_points[0][1]))
-half_slope_a = math.exp(math.log(sorted_closest_points[1][0])+0.5*math.log(sorted_closest_points[1][1]))
-one_slope_a = math.exp(math.log(sorted_closest_points[2][0])+1*math.log(sorted_closest_points[2][1]))
+  # Sorted based on the number of days
+  # Note: This is dependent on days being the second variable in the tuple
+  # We sort based on the number of days because the smallest value of days indicates the point belongs to
+  # the slope of a quarter, the second highest belongs to a line with slope 1/2 etc.
+  sorted_closest_points = sorted(closest_points, key=lambda closest_points: closest_points[1]) 
+  quarter_slope_a = math.exp(math.log(sorted_closest_points[0][0])+0.25*math.log(sorted_closest_points[0][1]))
+  half_slope_a = math.exp(math.log(sorted_closest_points[1][0])+0.5*math.log(sorted_closest_points[1][1]))
+  one_slope_a = math.exp(math.log(sorted_closest_points[2][0])+1*math.log(sorted_closest_points[2][1]))
 
-# Creating the line expressions
-# log(y) = log(x)*b+log(a)
-# b is the slope, a is the y-intercept
-quater_slope_expression = "[x]*-.25+log10(" + str(quarter_slope_a) + ")"
-half_slope_expression = "[x]*-.5+log10(" + str(half_slope_a) + ")"
-one_slope_expression = "[x]*-1+log10(" + str(one_slope_a) + ")"
+  # Creating the line expressions
+  # log(y) = log(x)*b+log(a)
+  # b is the slope, a is the y-intercept
+  quater_slope_expression = "[x]*-.25+log10(" + str(quarter_slope_a) + ")"
+  half_slope_expression = "[x]*-.5+log10(" + str(half_slope_a) + ")"
+  one_slope_expression = "[x]*-1+log10(" + str(one_slope_a) + ")"
 
-# Plotting the lines onto the ScatterPlot
-quarter_slope_curve = scatter_plot.FittingModels.AddCurve(quater_slope_expression)
-half_slope_curve = scatter_plot.FittingModels.AddCurve(half_slope_expression)
-one_slope_curve = scatter_plot.FittingModels.AddCurve(one_slope_expression)
+  # Plotting the lines onto the ScatterPlot
+  quarter_slope_curve = scatter_plot.FittingModels.AddCurve(quater_slope_expression)
+  half_slope_curve = scatter_plot.FittingModels.AddCurve(half_slope_expression)
+  one_slope_curve = scatter_plot.FittingModels.AddCurve(one_slope_expression)
 
-# Naming the cruves
-quarter_slope_curve.Curve.CustomDisplayName = "QUARTER SLOPE"
-half_slope_curve.Curve.CustomDisplayName = "HALF SLOPE"
-one_slope_curve.Curve.CustomDisplayName = "ONE SLOPE"
+  # Naming the cruves
+  quarter_slope_curve.Curve.CustomDisplayName = "QUARTER SLOPE"
+  half_slope_curve.Curve.CustomDisplayName = "HALF SLOPE"
+  one_slope_curve.Curve.CustomDisplayName = "ONE SLOPE"
 
-# Colouring the curves [A, R, G, B]
-green = Color.FromArgb(255, 0, 255, 0)
-orange = Color.FromArgb(255, 255, 174, 25)
-red = Color.FromArgb(255, 255, 0, 0)
-quarter_slope_curve.Curve.Color = green
-half_slope_curve.Curve.Color = orange
-one_slope_curve.Curve.Color = red
+  # Colouring the curves [A, R, G, B]
+  green = Color.FromArgb(255, 0, 255, 0)
+  orange = Color.FromArgb(255, 255, 174, 25)
+  red = Color.FromArgb(255, 255, 0, 0)
+  quarter_slope_curve.Curve.Color = green
+  half_slope_curve.Curve.Color = orange
+  one_slope_curve.Curve.Color = red
 
-# Changing the style of each line
-# Defaults to single line
-quarter_slope_curve.Curve.LineStyle = LineStyle().Dot
-half_slope_curve.Curve.LineStyle = LineStyle().Dash
-one_slope_curve.Curve.LineStyle = LineStyle()
+  # Changing the style of each line
+  # Defaults to single line
+  quarter_slope_curve.Curve.LineStyle = LineStyle().Dot
+  half_slope_curve.Curve.LineStyle = LineStyle().Dash
+  one_slope_curve.Curve.LineStyle = LineStyle()
