@@ -11,10 +11,9 @@ Creates the scatter plot
 from Spotfire.Dxp.Application.Visuals import *
 from Spotfire.Dxp.Data import *
 
-# Get the data table (object that contains all data)
-data_table = Document.Data.Tables
-data_table_name = [table.Name for table in data_table][0]
-data_table = data_table[ data_table_name ]
+# Getting the data table object
+table_name = "Monthly Production information link"
+data_table = Document.Data.Tables[table_name]
 
 # Creating the scatter plot
 scatter_plot = Document.ActivePageReference.Visuals.AddNew[ScatterPlot]()
