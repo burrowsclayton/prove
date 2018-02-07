@@ -105,3 +105,4 @@ ENV/
 
 # spotfire
 *.fqf
+*.knu
