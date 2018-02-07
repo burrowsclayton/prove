@@ -1,4 +1,4 @@
-""""
+"""
 Author: Joseph Tripodi
 Contact: au.joseph.tripodi@gmail.com
 For more information see: https://github.com/joseph-tripodi/prove/wiki/04.-Spotfire-API#spotfire-api-v76
@@ -14,8 +14,21 @@ from Spotfire.Dxp.Data import *
 from Spotfire.Dxp.Application.Scripting import ScriptDefinition
 import clr
 
+# Making sure a field and well name has been selected before plotting
+table_name = "Monthly Production information link"
+data_table = Document.Data.Tables[table_name]
+well_selected = True
+
+for filteringScheme in Document.FilteringSchemes:
+  for filter in filteringScheme[data_table]:
+    if filter.Name == "WELL_NAME":
+      if str(filter.Context) == "WELL_NAME: ((All))":
+        well_selected = False
+
+
 scatter_plot = clr.Reference[ScriptDefinition]()
 kmeans = clr.Reference[ScriptDefinition]()
+
 Document.ScriptManager.TryGetScript("scatter_plot", scatter_plot)
 Document.ScriptManager.TryGetScript("kmeans", kmeans)
 
