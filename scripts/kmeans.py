@@ -8,6 +8,7 @@ of clusters (k).
 from Spotfire.Dxp.Application.Visuals import *
 from Spotfire.Dxp.Data import *
 from System import Random, Double
+from System.Drawing import Color
 import math
 
 class KMeansClustering:
@@ -204,3 +205,17 @@ one_slope_curve = scatter_plot.FittingModels.AddCurve(one_slope_expression)
 quarter_slope_curve.Curve.CustomDisplayName = "QUARTER SLOPE"
 half_slope_curve.Curve.CustomDisplayName = "HALF SLOPE"
 one_slope_curve.Curve.CustomDisplayName = "ONE SLOPE"
+
+# Colouring the curves [A, R, G, B]
+green = Color.FromArgb(255, 0, 255, 0)
+orange = Color.FromArgb(255, 255, 174, 25)
+red = Color.FromArgb(255, 255, 0, 0)
+quarter_slope_curve.Curve.Color = green
+half_slope_curve.Curve.Color = orange
+one_slope_curve.Curve.Color = red
+
+# Changing the style of each line
+# Defaults to single line
+quarter_slope_curve.Curve.LineStyle = LineStyle().Dot
+half_slope_curve.Curve.LineStyle = LineStyle().Dash
+one_slope_curve.Curve.LineStyle = LineStyle()
