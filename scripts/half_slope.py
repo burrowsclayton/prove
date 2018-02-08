@@ -45,25 +45,23 @@ else:
   
   # Getting on the user marked data
   markings = Document.ActiveMarkingSelectionReference.GetSelection(data_table)
-  gas_rate, days = [], []
-
+  points = []
+  gas_rate, days = 0, 1
   # Extracting the data into separate lists
   for row in data_table.GetRows(markings.AsIndexSet(), gas_rate_cursor, days_cursor):
-    gas_rate.append(gas_rate_cursor.CurrentValue)
-    days.append(days_cursor.CurrentValue)
+    points.append((gas_rate_cursor.CurrentValue, days_cursor.CurrentValue))
 
-  if gas_rate == [] or days == []:
+  if points == []:
     MessageBox.Show("No markings have been selected.", "No markings.")
   else:
-    # Getting the median value from number of days produced
-    # Using that index to get the gas rate value
-    days_median = sorted(days)[len(days)/2]
-    index_of_median = days.index(days_median)
-    gas_rate_median = gas_rate[index_of_median]
+    # Getting the median point based on the days value which is the 
+    # second value in the tuple then we get the len/2 point which is
+    # the median. 
+    median = sorted(points, key = lambda points: points[days])[len(points)/2]
 
     # Wokring out the equation of the line, only unknown is the y intercept (a)
     # log(y) = log(x)*b + log(a)
-    intercept = math.exp(math.log(gas_rate_median)+0.5*math.log(days_median))
+    intercept = math.exp(math.log(median[gas_rate])+0.5*math.log(median[days]))
     half_slope_expression = "[x]*-.5+log10(" + str(intercept) + ")"
     half_slope_curve = scatter_plot.FittingModels.AddCurve(half_slope_expression)
 
