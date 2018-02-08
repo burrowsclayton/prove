@@ -225,11 +225,9 @@ else:
   one_slope_curve.Curve.CustomDisplayName = "ONE SLOPE"
 
   # Colouring the curves [A, R, G, B]
-  green = Color.FromArgb(255, 0, 255, 0)
-  orange = Color.FromArgb(255, 255, 174, 25)
   red = Color.FromArgb(255, 255, 0, 0)
-  quarter_slope_curve.Curve.Color = green
-  half_slope_curve.Curve.Color = orange
+  quarter_slope_curve.Curve.Color = red
+  half_slope_curve.Curve.Color = red
   one_slope_curve.Curve.Color = red
 
   # Changing the style of each line
@@ -237,3 +235,8 @@ else:
   quarter_slope_curve.Curve.LineStyle = LineStyle().Dot
   half_slope_curve.Curve.LineStyle = LineStyle().Dash
   one_slope_curve.Curve.LineStyle = LineStyle()
+
+  quarter_slope_curve.Curve.Width = 3
+  half_slope_curve.Curve.Width = 3
+  one_slope_curve.Curve.Width = 3
+

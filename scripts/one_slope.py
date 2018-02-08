@@ -73,7 +73,7 @@ else:
 
     # Line style
     one_slope_curve.Curve.CustomDisplayName = "ONE SLOPE"
-    one_slope_curve.Curve.LineStyle = LineStyle().Dot
+    one_slope_curve.Curve.LineStyle = LineStyle()
     red = Color.FromArgb(255, 255, 0, 0)
     one_slope_curve.Curve.Color = red
-    one_slope_curve.Curve.LineStyle = LineStyle()
+    one_slope_curve.Curve.Width = 3  
