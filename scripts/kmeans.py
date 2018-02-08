@@ -205,12 +205,12 @@ else:
   # Creating the line expressions
   # log(y) = log(x)*b+log(a)
   # b is the slope, a is the y-intercept
-  quater_slope_expression = "[x]*-.25+log10(" + str(quarter_slope_a) + ")"
+  quarter_slope_expression = "[x]*-.25+log10(" + str(quarter_slope_a) + ")"
   half_slope_expression = "[x]*-.5+log10(" + str(half_slope_a) + ")"
   one_slope_expression = "[x]*-1+log10(" + str(one_slope_a) + ")"
 
   # Plotting the lines onto the ScatterPlot
-  quarter_slope_curve = scatter_plot.FittingModels.AddCurve(quater_slope_expression)
+  quarter_slope_curve = scatter_plot.FittingModels.AddCurve(quarter_slope_expression)
   half_slope_curve = scatter_plot.FittingModels.AddCurve(half_slope_expression)
   one_slope_curve = scatter_plot.FittingModels.AddCurve(one_slope_expression)
 
