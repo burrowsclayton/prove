@@ -19,7 +19,8 @@ data_table = Document.Data.Tables[table_name]
 scatter_plot = Document.ActivePageReference.Visuals.AddNew[ScatterPlot]()
 # Linking the data table with the newly created scatter plot
 scatter_plot.Data.DataTableReference = data_table
-
+# Auto configures the scattter plot settings, needed for markings
+scatter_plot.Data.AutoConfigure()
 # Setting the x and y axis of the scatter plot, and setting them to use a log scale
 scatter_plot.YAxis.Expression = "[GAS_RATE_MSCF_PD]"
 scatter_plot.XAxis.Expression = "[NUMBER_OF_DAYS_PRODUCED]"
@@ -29,5 +30,3 @@ scatter_plot.YAxis.UseLogTransform = True
 
 # Display settings of the scatter plot
 scatter_plot.ShapeAxis.DefaultShape = MarkerShape(MarkerType.Circle)
-
-print "Script Complete"
