@@ -22,7 +22,12 @@ data_table = Document.Data.Tables[table_name]
 scatter_plot = None
 for visual in Document.ActivePageReference.Visuals:
   if "ScatterPlot" in str(visual.TypeId):
-    scatter_plot = visual.As[ScatterPlot]()
+    temp = visual.As[ScatterPlot]()
+    # Select the scatter plot that has gas rate vs number of days produced
+    # Just incase the user has created more than one scatter plot
+    if (temp.XAxis.Expression == "[NUMBER_OF_DAYS_PRODUCED]" and
+          temp.YAxis.Expression == "[GAS_RATE_MSCF_PD]"):
+       scatter_plot = temp
 
 # Selecting the filtered rows for line calculations
 # Creating the cursors to use in our column selections
