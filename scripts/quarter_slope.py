@@ -45,3 +45,14 @@ else:
   for row in data_table.GetRows(markings.AsIndexSet(), gas_rate_cursor, days_cursor):
     gas_rate.append(gas_rate_cursor.CurrentValue)
     days.append(days_cursor.CurrentValue)
+
+  days_median = sorted(days)[len(days)/2]
+  index_of_median = days.index(days_median)
+  gas_rate_median = gas_rate[index_of_median]
+
+  intercept = math.exp(math.log(gas_rate_median)+0.25*math.log(days_median))
+  
+  quarter_slope_expression = "[x]*-.25+log10(" + str(intercept) + ")"
+  quarter_slope_curve = scatter_plot.FittingModels.AddCurve(quarter_slope_expression)
+  quarter_slope_curve.Curve.LineStyle = LineStyle().Dot
+  
