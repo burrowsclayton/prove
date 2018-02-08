@@ -74,6 +74,7 @@ else:
     # Line style
     quarter_slope_curve.Curve.CustomDisplayName = "QUARTER SLOPE"
     quarter_slope_curve.Curve.LineStyle = LineStyle().Dot
-    green = Color.FromArgb(255, 0, 255, 0)
-    quarter_slope_curve.Curve.Color = green
+    red = Color.FromArgb(255, 255, 0, 0)
+    one_slope_curve.Curve.Color = red
+    one_slope_curve.Curve.Width = 3  
   

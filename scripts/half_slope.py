@@ -74,8 +74,9 @@ else:
     # Line style
     half_slope_curve.Curve.CustomDisplayName = "HALF SLOPE"
     half_slope_curve.Curve.LineStyle = LineStyle().Dash
-    orange = Color.FromArgb(255, 255, 174, 25)
-    half_slope_curve.Curve.Color = orange
+    red = Color.FromArgb(255, 255, 0, 0)
+    one_slope_curve.Curve.Color = red
+    one_slope_curve.Curve.Width = 3  
   
 
 
