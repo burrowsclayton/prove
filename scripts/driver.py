@@ -12,13 +12,18 @@ This script runs the entire project.
 from Spotfire.Dxp.Application.Visuals import *
 from Spotfire.Dxp.Data import *
 from Spotfire.Dxp.Application.Scripting import ScriptDefinition
+import sys
 import clr
 clr.AddReference("System.Windows.Forms")
 from System.Windows.Forms import MessageBox
 
 # Getting the data table object
 table_name = "Monthly Production information link"
-data_table = Document.Data.Tables[table_name]
+data_table = None
+try:
+  data_table = Document.Data.Tables[table_name]
+except:
+  sys.exit("Data table does not exist")
 
 # Determines if a well has been selected by looking at the context
 # of the filtering option "WELL_NAME"
