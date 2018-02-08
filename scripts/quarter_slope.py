@@ -47,27 +47,30 @@ else:
     gas_rate.append(gas_rate_cursor.CurrentValue)
     days.append(days_cursor.CurrentValue)
 
-  # Getting the median value from number of days produced
-  # Using that index to get the gas rate value
-  days_median = sorted(days)[len(days)/2]
-  index_of_median = days.index(days_median)
-  gas_rate_median = gas_rate[index_of_median]
+  if gas_rate == [] or days == []:
+    MessageBox.Show("No markings have been selected.", "No markings.")
+  else:
+    # Getting the median value from number of days produced
+    # Using that index to get the gas rate value
+    days_median = sorted(days)[len(days)/2]
+    index_of_median = days.index(days_median)
+    gas_rate_median = gas_rate[index_of_median]
 
-  # Wokring out the equation of the line, only unknown is the y intercept (a)
-  # log(y) = log(x)*b + log(a)
-  intercept = math.exp(math.log(gas_rate_median)+0.25*math.log(days_median))
-  quarter_slope_expression = "[x]*-.25+log10(" + str(intercept) + ")"
-  quarter_slope_curve = scatter_plot.FittingModels.AddCurve(quarter_slope_expression)
+    # Wokring out the equation of the line, only unknown is the y intercept (a)
+    # log(y) = log(x)*b + log(a)
+    intercept = math.exp(math.log(gas_rate_median)+0.25*math.log(days_median))
+    quarter_slope_expression = "[x]*-.25+log10(" + str(intercept) + ")"
+    quarter_slope_curve = scatter_plot.FittingModels.AddCurve(quarter_slope_expression)
 
-  # Disabling any previous quarter slope lines
-  for fm in scatter_plot.FittingModels:
-    if str(fm.TypeId) == "TypeIdentifier:Spotfire.ReferenceCurveFittingModel":
-      if fm.Curve.CustomDisplayName == "QUARTER SLOPE":
-        fm.Enabled = False
+    # Disabling any previous quarter slope lines
+    for fm in scatter_plot.FittingModels:
+      if str(fm.TypeId) == "TypeIdentifier:Spotfire.ReferenceCurveFittingModel":
+        if fm.Curve.CustomDisplayName == "QUARTER SLOPE":
+          fm.Enabled = False
 
-  # Line style
-  quarter_slope_curve.Curve.CustomDisplayName = "QUARTER SLOPE"
-  quarter_slope_curve.Curve.LineStyle = LineStyle().Dot
-  green = Color.FromArgb(255, 0, 255, 0)
-  quarter_slope_curve.Curve.Color = green
+    # Line style
+    quarter_slope_curve.Curve.CustomDisplayName = "QUARTER SLOPE"
+    quarter_slope_curve.Curve.LineStyle = LineStyle().Dot
+    green = Color.FromArgb(255, 0, 255, 0)
+    quarter_slope_curve.Curve.Color = green
   

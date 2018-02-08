@@ -47,27 +47,30 @@ else:
     gas_rate.append(gas_rate_cursor.CurrentValue)
     days.append(days_cursor.CurrentValue)
 
-  # Getting the median value from number of days produced
-  # Using that index to get the gas rate value
-  days_median = sorted(days)[len(days)/2]
-  index_of_median = days.index(days_median)
-  gas_rate_median = gas_rate[index_of_median]
+  if gas_rate == [] or days == []:
+    MessageBox.Show("No markings have been selected.", "No markings.")
+  else:
+    # Getting the median value from number of days produced
+    # Using that index to get the gas rate value
+    days_median = sorted(days)[len(days)/2]
+    index_of_median = days.index(days_median)
+    gas_rate_median = gas_rate[index_of_median]
 
-  # Wokring out the equation of the line, only unknown is the y intercept (a)
-  # log(y) = log(x)*b + log(a)
-  intercept = math.exp(math.log(gas_rate_median)+1.0*math.log(days_median))
-  one_slope_expression = "[x]*-1+log10(" + str(intercept) + ")"
-  one_slope_curve = scatter_plot.FittingModels.AddCurve(one_slope_expression)
+    # Wokring out the equation of the line, only unknown is the y intercept (a)
+    # log(y) = log(x)*b + log(a)
+    intercept = math.exp(math.log(gas_rate_median)+1.0*math.log(days_median))
+    one_slope_expression = "[x]*-1+log10(" + str(intercept) + ")"
+    one_slope_curve = scatter_plot.FittingModels.AddCurve(one_slope_expression)
 
-  # Disabling any previous one slope lines
-  for fm in scatter_plot.FittingModels:
-    if str(fm.TypeId) == "TypeIdentifier:Spotfire.ReferenceCurveFittingModel":
-      if fm.Curve.CustomDisplayName == "ONE SLOPE":
-        fm.Enabled = False
+    # Disabling any previous one slope lines
+    for fm in scatter_plot.FittingModels:
+      if str(fm.TypeId) == "TypeIdentifier:Spotfire.ReferenceCurveFittingModel":
+        if fm.Curve.CustomDisplayName == "ONE SLOPE":
+          fm.Enabled = False
 
-  # Line style
-  one_slope_curve.Curve.CustomDisplayName = "ONE SLOPE"
-  one_slope_curve.Curve.LineStyle = LineStyle().Dot
-  red = Color.FromArgb(255, 255, 0, 0)
-  one_slope_curve.Curve.Color = red
-  one_slope_curve.Curve.LineStyle = LineStyle()
+    # Line style
+    one_slope_curve.Curve.CustomDisplayName = "ONE SLOPE"
+    one_slope_curve.Curve.LineStyle = LineStyle().Dot
+    red = Color.FromArgb(255, 255, 0, 0)
+    one_slope_curve.Curve.Color = red
+    one_slope_curve.Curve.LineStyle = LineStyle()
