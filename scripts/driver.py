@@ -38,13 +38,9 @@ if well_selected:
   # Produced the prove analysis scatter plot
 
   scatter_plot = clr.Reference[ScriptDefinition]()
-  kmeans = clr.Reference[ScriptDefinition]()
-
   Document.ScriptManager.TryGetScript("scatter_plot", scatter_plot)
-  Document.ScriptManager.TryGetScript("kmeans", kmeans)
-
   Document.ScriptManager.ExecuteScript(scatter_plot.ScriptCode, {})
-  Document.ScriptManager.ExecuteScript(kmeans.ScriptCode, {})
+
 
 else:
   # If no well has been selected then alert the user
