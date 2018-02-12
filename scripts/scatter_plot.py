@@ -37,6 +37,14 @@ values_end = str(name_filter.Context).find(')')
 # "Wackett 9, Wackett 8, Wackett 10" then split on commas
 names = str(name_filter.Context)[values_begin:values_end].split(',')
 
+# Need to make each scatter plot use custom filtering options which are apart of the 
+# spotfire application
+custom_filter = None
+for filter in Document.Data.Filterings:
+  if filter.Name == "Non-Zero and Duplicates":
+    custom_filter = filter
+    break
+
 for well_name in names:
   # Must set the name to uppercase since this is how the names are stored in the tavle
   well_name = well_name.upper()
@@ -55,7 +63,9 @@ for well_name in names:
   scatter_plot.XAxis.UseLogTransform = True
   scatter_plot.YAxis.UseLogTransform = True
 
-  # Setting the filtering expression
+  # Setting the filtering options
+  scatter_plot.Data.UseActiveFiltering = False
+  scatter_plot.Data.Filterings.Add(custom_filter)
   scatter_plot.Data.WhereClauseExpression = '[WELL_NAME] ~= "' + well_name + '"'
 
   # Display settings of the scatter plot
