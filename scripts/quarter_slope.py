@@ -41,7 +41,7 @@ for visual in Document.ActivePageReference.Visuals:
     temp = visual.As[ScatterPlot]()
     # Select the scatter plot that has gas rate vs number of days produced
     # Just incase the user has created more than one scatter plot
-    if temp.Title == well_name:
+    if well_name in temp.Data.WhereClauseExpression:
        scatter_plot = temp
 
 if scatter_plot == None:
