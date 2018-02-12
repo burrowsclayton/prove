@@ -22,6 +22,18 @@ from System.Windows.Forms import MessageBox
 table_name = "Monthly Production information link"
 data_table = Document.Data.Tables[table_name]
 
+# There are multiple scatter plots so we must first extract the data to determine which 
+# scatter plot we want. This is because the marked data should only contain the name
+# of a well for that specific scatter plot
+markings = Document.ActiveMarkingSelectionReference.GetSelection(data_table)
+columns = data_table.Columns
+name_cursor = DataValueCursor.Create(columns["WELL_NAME"])
+well_name = ""
+# Extracting the data into separate lists
+for row in data_table.GetRows(markings.AsIndexSet(), name_cursor):
+  well_name = name_cursor.CurrentValue
+  break
+
 # Getting a reference to the scatter plot
 scatter_plot = None
 for visual in Document.ActivePageReference.Visuals:
@@ -29,8 +41,7 @@ for visual in Document.ActivePageReference.Visuals:
     temp = visual.As[ScatterPlot]()
     # Select the scatter plot that has gas rate vs number of days produced
     # Just incase the user has created more than one scatter plot
-    if (temp.XAxis.Expression == "[NUMBER_OF_DAYS_PRODUCED]" and
-          temp.YAxis.Expression == "[GAS_RATE_MSCF_PD]"):
+    if well_name in temp.Data.WhereClauseExpression:
        scatter_plot = temp
 
 if scatter_plot == None:
