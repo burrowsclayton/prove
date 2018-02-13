@@ -66,9 +66,8 @@ for well_name in names:
   # Setting the filtering options
   scatter_plot.Data.UseActiveFiltering = False
   scatter_plot.Data.Filterings.Add(custom_filter)
-  scatter_plot.Data.WhereClauseExpression = '[WELL_NAME] ~= "' + well_name + '"'
+  scatter_plot.Data.WhereClauseExpression = '[WELL_NAME] ~= "^' + well_name + '$"'
 
   # Display settings of the scatter plot
   scatter_plot.ShapeAxis.DefaultShape = MarkerShape(MarkerType.Circle)
   scatter_plot.Title = well_name
-
