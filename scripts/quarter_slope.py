@@ -41,7 +41,12 @@ for visual in Document.ActivePageReference.Visuals:
     temp = visual.As[ScatterPlot]()
     # Select the scatter plot that has gas rate vs number of days produced
     # Just incase the user has created more than one scatter plot
-    if well_name in temp.Data.WhereClauseExpression:
+    
+    #Extract the name from the where clause expression  
+    name_begins = temp.Data.WhereClauseExpression.find('^') + 1
+    name_ends = temp.Data.WhereClauseExpression.find('$')  
+    temp_well_name = temp.Data.WhereClauseExpression[name_begins:name_ends]  
+    if well_name == temp_well_name:  
        scatter_plot = temp
 
 if scatter_plot == None:
@@ -88,4 +93,3 @@ else:
     red = Color.FromArgb(255, 255, 0, 0)
     quarter_slope_curve.Curve.Color = red
     quarter_slope_curve.Curve.Width = 3  
-  
