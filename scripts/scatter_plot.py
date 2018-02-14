@@ -71,3 +71,6 @@ for well_name in names:
   # Display settings of the scatter plot
   scatter_plot.ShapeAxis.DefaultShape = MarkerShape(MarkerType.Circle)
   scatter_plot.Title = well_name
+
+  # Setting the tool tip display 
+  scatter_plot.Details.Items.AddExpression("Min([END_OF_MONTH_DATE])")
