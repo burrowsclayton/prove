@@ -1,64 +1,65 @@
-<style>
-  .pad-top{
-    padding-top: 10px;
-  }
+  <style>
+    .pad-top{
+      padding-top: 10px;
+    }
 
-  .pad-bottom {
-    padding-bottom: 10px;
-  }
+    .pad-bottom {
+      padding-bottom: 10px;
+    }
 
-  .th-lg {
-    font-size: 15pt;
-  }
+    .th-lg {
+      font-size: 15pt;
+    }
 
-  .th-md {
-    font-size: 9pt;
-  }
-</style>
+    .th-md {
+      font-size: 9pt;
+    }
+  </style>
 
-<link href="/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link href="/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-<div class="container">
-  <div class="row">
-    <div class="col-2 Field-Well-Name-List">
-      <SpotfireControl id="41fc853dd4154afca5f27e9ebc795de0" />
-      <SpotfireControl id="c23ed2c4f0f24b759fa9ed05f808e68c" />
-    </div>
-    
-    <div class="col-2 Reset-Filters pad-bottom">
-        <SpotfireControl id="6e543eee88784dd2a2d239aac0e39aaa" />
-    </div>
-
-    <div class="col-2 ProVe-Analysis pad-top pad-bottom">
-        <SpotfireControl id="d801b696ad4e4159b9539f8bdfd8db09" />
-    </div>
-
-    <div class="col-2 Quarter-Half-One pad-bottom">
-        <SpotfireControl id="4fa05af95df949a198971407c4d11f8e" />
-        <SpotfireControl id="db6d39ad42e1478398c97739a9f837c5" />
-        <SpotfireControl id="5b91ab19bdf243138903539905a0d5e1" />
-    </div>
-  </div>
-
-  <div class="row">
-      <div class="col-2 Other-Filter-Options pad-top">
-        <table class="table">
-          <thead>
-            <tr>
-              <th class="th-lg">Other filter options:</th>
-            </tr>
-            <tr>
-              <th class="th-md"> Note: The only options that should be selected are Non-Zero and Original</th>
-            </tr>
-          </thead>
-          <tbody>
-            <td>
-              <SpotfireControl id="b2265ea4400f4892a2844125a0dedc84" />
-              <SpotfireControl id="6dd93ff2728e4bae83c29e8b9d27a345" />
-            </td>
-          </tbody>
-        </table>
+  <div class="container">
+    <div class="row">
+      <div class="col-2 Field-Well-Name-List">
+        <pre style="font-family: Verdana; font-weight: bold; font-size: 15pt;">Select a field:       Select a well:</pre>
+        <SpotfireControl id="41fc853dd4154afca5f27e9ebc795de0" />
+        <SpotfireControl id="c23ed2c4f0f24b759fa9ed05f808e68c" />
       </div>
-  </div>
+      
+      <div class="col-2 Reset-Filters pad-bottom">
+          <SpotfireControl id="6e543eee88784dd2a2d239aac0e39aaa" />
+      </div>
 
-</div>
+      <div class="col-2 ProVe-Analysis pad-top pad-bottom">
+          <SpotfireControl id="d801b696ad4e4159b9539f8bdfd8db09" />
+      </div>
+
+      <div class="col-2 Quarter-Half-One pad-bottom">
+          <SpotfireControl id="4fa05af95df949a198971407c4d11f8e" />
+          <SpotfireControl id="db6d39ad42e1478398c97739a9f837c5" />
+          <SpotfireControl id="5b91ab19bdf243138903539905a0d5e1" />
+      </div>
+    </div>
+
+    <div class="row">
+        <div class="col-2 Other-Filter-Options pad-top">
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="th-lg">Other filter options:</th>
+              </tr>
+              <tr>
+                <th class="th-md"> Note: The only options that should be selected are Non-Zero and Original</th>
+              </tr>
+            </thead>
+            <tbody>
+              <td>
+                <SpotfireControl id="b2265ea4400f4892a2844125a0dedc84" />
+                <SpotfireControl id="6dd93ff2728e4bae83c29e8b9d27a345" />
+              </td>
+            </tbody>
+          </table>
+        </div>
+    </div>
+
+  </div>
