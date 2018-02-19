@@ -12,8 +12,7 @@ from Spotfire.Dxp.Application.Visuals import *
 from Spotfire.Dxp.Data import *
 
 # Getting the data table object
-table_name = "Monthly Production information link"
-data_table = Document.Data.Tables[table_name]
+data_table = Document.Data.Tables["Monthly Production information link"]
 
 # Getting the well name filter
 name_filter = None
