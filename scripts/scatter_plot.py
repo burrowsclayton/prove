@@ -12,8 +12,7 @@ from Spotfire.Dxp.Application.Visuals import *
 from Spotfire.Dxp.Data import *
 
 # Getting the data table object
-table_name = "Monthly Production information link"
-data_table = Document.Data.Tables[table_name]
+data_table = Document.Data.Tables["Monthly Production information link"]
 
 # Getting the well name filter
 name_filter = None
@@ -58,10 +57,11 @@ for well_name in names:
   # Auto configures the scattter plot settings, needed for markings
   scatter_plot.Data.AutoConfigure()
   # Setting the x and y axis of the scatter plot, and setting them to use a log scale
-  scatter_plot.YAxis.Expression = "[GAS_RATE_MSCF_PD]"
+  scatter_plot.YAxis.Expression = "[GAS_RATE_MSCF_PD],[MRTLL_MSCF_PD]"
   scatter_plot.XAxis.Expression = "[NUMBER_OF_DAYS_PRODUCED]"
   scatter_plot.XAxis.UseLogTransform = True
   scatter_plot.YAxis.UseLogTransform = True
+  
 
   # Setting the filtering options
   scatter_plot.Data.UseActiveFiltering = False
@@ -71,6 +71,7 @@ for well_name in names:
   # Display settings of the scatter plot
   scatter_plot.ShapeAxis.DefaultShape = MarkerShape(MarkerType.Circle)
   scatter_plot.Title = well_name
+  scatter_plot.ColorAxis.Expression = "<[Axis.Default.Names]>"
 
   # Setting the tool tip display 
   scatter_plot.Details.Items.AddExpression("Min([END_OF_MONTH_DATE])")
