@@ -50,6 +50,8 @@ for filter in Document.Data.Filterings:
     custom_filter = filter
     break
 
+plots_page = get_plot_page("ProVe Plots")
+
 for well_name in names:
   # Must set the name to uppercase since this is how the names are stored in the tavle
   well_name = well_name.upper()
@@ -57,7 +59,7 @@ for well_name in names:
   # to remove the leading white space
   well_name = well_name[1:] if well_name[0] == " " else well_name
   # Creating the scatter plots
-  scatter_plot = get_plot_page("ProVe Plots").Visuals.AddNew[ScatterPlot]()
+  scatter_plot = plots_page.Visuals.AddNew[ScatterPlot]()
   # Linking the data table with the newly created scatter plot
   scatter_plot.Data.DataTableReference = data_table
   # Auto configures the scattter plot settings, needed for markings
@@ -81,3 +83,5 @@ for well_name in names:
 
   # Setting the tool tip display 
   scatter_plot.Details.Items.AddExpression("Min([END_OF_MONTH_DATE])")
+
+Document.ActivePageReference = plots_page
