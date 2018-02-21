@@ -11,6 +11,12 @@ Creates the scatter plot
 from Spotfire.Dxp.Application.Visuals import *
 from Spotfire.Dxp.Data import *
 
+# Returns the page with the name give
+def get_plot_page(name_of_page="ProVe Plots"):
+  for page in Document.Pages:
+    if page.Title == name_of_page:
+      return page
+
 # Getting the data table object
 data_table = Document.Data.Tables["Monthly Production information link"]
 
@@ -51,7 +57,7 @@ for well_name in names:
   # to remove the leading white space
   well_name = well_name[1:] if well_name[0] == " " else well_name
   # Creating the scatter plots
-  scatter_plot = Document.ActivePageReference.Visuals.AddNew[ScatterPlot]()
+  scatter_plot = get_plot_page("ProVe Plots").Visuals.AddNew[ScatterPlot]()
   # Linking the data table with the newly created scatter plot
   scatter_plot.Data.DataTableReference = data_table
   # Auto configures the scattter plot settings, needed for markings
