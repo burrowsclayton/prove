@@ -29,13 +29,18 @@ mrtll_cursor = DataValueCursor.Create(columns["Safely above MRTLL"])
 constraint_cursor = DataValueCursor.Create(columns["Constraint"])
 stability_cursor = DataValueCursor.Create(columns["Well Stability"])
 period_cursor = DataValueCursor.Create(columns["Period"])
+satellite_cursor = DataValueCursor.Create(columns["Satellite"])
 
 well_names = set()
+satellite = None
 wells = []
 # Get markings for current data table (Watchlist Data)
 markings = Document.ActiveFilteringSelectionReference.GetSelection(data_table)
 # Get each well for watchlist
-for row in data_table.GetRows(markings.AsIndexSet(), name_cursor, status_cursor, mrtll_cursor, constraint_cursor, stability_cursor, period_cursor):
+for row in data_table.GetRows(markings.AsIndexSet(), satellite_cursor, name_cursor, status_cursor, mrtll_cursor, constraint_cursor, stability_cursor, period_cursor):
+  if satellite == None:
+    satellite = satellite_cursor.CurrentValue
+
   if name_cursor.CurrentValue not in well_names:
     well_names.add(name_cursor.CurrentValue) 
     wells.append({"name": name_cursor.CurrentValue, "status": status_cursor.CurrentValue, "mrtll": mrtll_cursor.CurrentValue, "constraint": constraint_cursor.CurrentValue, "stability": stability_cursor.CurrentValue, "period": period_cursor.CurrentValue})
@@ -90,11 +95,9 @@ td, th {
 
 </style>
 
-<h2> Watchlist </h2>
-<table>
-<tr>
-
 """
+
+html_content = html_content + "<h2>" + satellite + "</h2> <table> <tr>" 
 
 # Generate the header information
 for header in headers:
