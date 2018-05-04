@@ -27,22 +27,22 @@ def htmlStatus(well):
    return '<td class="orange">' + well["status"] + "</td>"
   elif well["status"] == "Action Needed":
     return '<td class="red">' + well["status"] + "</td>"
-  
-  return '<td class="black">' + well["status"] + "</td>"
+  else:
+    return '<td class="black">' + well["status"] + "</td>"
     
 def htmlMrtll(well):
   if well["mrtll"] == "Yes":
     return '<td class="green">' + well["mrtll"] + "</td>"
   elif well["mrtll"] == "No":
     return '<td class="red">' + well["mrtll"] + "</td>"
-  
-  return '<td class="black">' + well["mrtll"] + "</td>"
+  else:
+    return '<td class="black">' + well["mrtll"] + "</td>"
 
 def htmlConstraint(well):
   if well["constraint"] == "Offline":
     return '<td class="black">' + well["constraint"] + "</td>"
-  
-  return "<td>" + well["constraint"] + "</td>"
+  else:
+    return "<td>" + well["constraint"] + "</td>"
     
 def htmlStability(well):
   if well["stability"] == "Stable":
@@ -51,14 +51,14 @@ def htmlStability(well):
     return '<td class="orange">' + well["stability"] + "</td>"
   elif well["stability"] == "Unstable":
     return '<td class="red">' + well["stability"] + "</td>"
-    
-  return '<td class="black">' +  well["stability"] + "</td>"
+  else:
+    return '<td class="black">' +  well["stability"] + "</td>"
     
 def htmlPeriod(well):
   if well['offline'] == 'Offline':
     return '<td class="black"> Offline </td>'
-      
-  return "<td>" + well["offline"] + "</td>"
+  else:
+    return "<td>" + well["offline"] + "</td>"
 
 def rankStatus(current, prev):
   if (prev['status'] == 'No Issue') and (current['status'] == 'Warning'):
