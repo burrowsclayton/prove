@@ -27,22 +27,22 @@ def htmlStatus(well):
    return '<td class="orange">' + well["status"] + "</td>"
   elif well["status"] == "Action Needed":
     return '<td class="red">' + well["status"] + "</td>"
-  else:
-    return '<td class="black">' + well["status"] + "</td>"
+  
+  return '<td class="black">' + well["status"] + "</td>"
     
 def htmlMrtll(well):
   if well["mrtll"] == "Yes":
     return '<td class="green">' + well["mrtll"] + "</td>"
   elif well["mrtll"] == "No":
     return '<td class="red">' + well["mrtll"] + "</td>"
-  else:
-    return '<td class="black">' + well["mrtll"] + "</td>"
+  
+  return '<td class="black">' + well["mrtll"] + "</td>"
 
 def htmlConstraint(well):
   if well["constraint"] == "Offline":
     return '<td class="black">' + well["constraint"] + "</td>"
-  else:
-    return "<td>" + well["constraint"] + "</td>"
+  
+  return "<td>" + well["constraint"] + "</td>"
     
 def htmlStability(well):
   if well["stability"] == "Stable":
@@ -51,12 +51,58 @@ def htmlStability(well):
     return '<td class="orange">' + well["stability"] + "</td>"
   elif well["stability"] == "Unstable":
     return '<td class="red">' + well["stability"] + "</td>"
-  else:
-    return '<td class="black">' +  well["stability"] + "</td>"
+    
+  return '<td class="black">' +  well["stability"] + "</td>"
     
 def htmlPeriod(well):
-  return "<td>" + str(well["period"]) + "</td>"
+  if well['offline'] == 'Offline':
+    return '<td class="black"> Offline </td>'
+      
+  return "<td>" + well["offline"] + "</td>"
 
+def rankStatus(current, prev):
+  if (prev['status'] == 'No Issue') and (current['status'] == 'Warning'):
+    current['rank'] += 1 / current['period']
+  elif (prev['status'] == 'No Issue') and (current['status'] == 'Action Needed'):
+    current['rank'] += 2 / current['period']
+  elif (prev['status'] == 'No Issue') and (current['status'] == 'Offline'):
+    current['rank'] += 3 / current['period']
+    current['offline'] = str(current['period']*3) + " Months"
+  elif (prev['status'] == 'Warning') and (current['status'] == 'Action Needed'):
+    current['rank'] += 2 / current['period']
+  elif (prev['status'] == 'Warning') and (current['status'] == 'Offline'):
+    current['rank'] += 3 / current['period']
+    current['offline'] = str(current['period']*3) + " Months"
+  elif (prev['status'] == 'Action Needed') and (current['status'] == 'Offline'):
+    current['rank'] += 3 / current['period']
+    current['offline'] = str(current['period']*3) + " Months"
+  return current
+
+    
+def rankMrtll(current, prev):
+  if (prev['mrtll'] == 'Yes') and (current['mrtll'] == 'No'):
+    current['rank'] += 2 / current['period']
+  elif (prev['mrtll'] == 'Yes') and (current['mrtll'] == 'Offline'):
+    current['rank'] += 3 / current['period']
+  elif (prev['mrtll'] == 'No') and (current['mrtll'] == 'Offline'):
+    current['rank'] += 3 / current['period']
+  return current
+  
+def rankStability(current, prev):
+  if (prev['stability'] == 'Stable') and (current['stability'] == 'Close to Unstable'):
+    current['rank'] += 1 / current['period']
+  elif (prev['stability'] == 'Stable') and (current['stability'] == 'Unstable'):
+    current['rank'] += 2 / current['period']
+  elif (prev['stability'] == 'Stable') and (current['stability'] == 'Offline'):
+    current['rank'] += 3 / current['period']
+  elif (prev['stability'] == 'Close to Unstable') and (current['stability'] == 'Unstable'):
+    current['rank'] += 2 / current['period']
+  elif (prev['stability'] == 'Close to Unstable') and (current['stability'] == 'Offline'):
+    current['rank'] += 3 / current['period']
+  elif (prev['stability'] == 'Unstable') and (current['stability'] == 'Offline'):
+    current['rank'] += 3 / current['period']
+  return current
+  
 # Getting the data table object
 table_name = "WatchlistData"
 data_table = Document.Data.Tables[table_name]
@@ -71,9 +117,9 @@ stability_cursor = DataValueCursor.Create(columns["Well Stability"])
 period_cursor = DataValueCursor.Create(columns["Period"])
 satellite_cursor = DataValueCursor.Create(columns["Satellite"])
 
-well_names = set()
 satellite = None
-wells = []
+rankedWells = []
+allRows = []
 # Get markings for current data table (Watchlist Data)
 markings = Document.ActiveFilteringSelectionReference.GetSelection(data_table)
 # Get each well for watchlist
@@ -81,9 +127,51 @@ for row in data_table.GetRows(markings.AsIndexSet(), satellite_cursor, name_curs
   if satellite == None:
     satellite = satellite_cursor.CurrentValue
 
-  if name_cursor.CurrentValue not in well_names:
-    well_names.add(name_cursor.CurrentValue) 
-    wells.append({"name": name_cursor.CurrentValue, "status": status_cursor.CurrentValue, "mrtll": mrtll_cursor.CurrentValue, "constraint": constraint_cursor.CurrentValue, "stability": stability_cursor.CurrentValue, "period": period_cursor.CurrentValue})
+  allRows.append({"name": name_cursor.CurrentValue, "status": status_cursor.CurrentValue, "mrtll": mrtll_cursor.CurrentValue, "constraint": constraint_cursor.CurrentValue, "stability": stability_cursor.CurrentValue, "period": period_cursor.CurrentValue})
+
+# Perform the ranking
+well_names = set()
+wells = []
+# Loop through each well
+for well in allRows:
+  if well["name"] not in well_names:
+    well_names.add(well["name"])
+    rankedWell = dict(well)
+    rankedWell['rank'] = 0
+    rankedWell['offline'] = 'N/A'
+
+    # Get all wells with the same name as the current well to get all periods
+    # This can be made shorter in terms of execution time if you enumerate 
+    # and search from i or whatever, but if you think about it you can
+    periods = []
+    for w in allRows:
+      if w["name"] == rankedWell["name"]:
+        periods.append(w)
+      if len(periods) >= 5:
+        break
+    
+    prev_period = None
+    for period in periods:
+      # If it is offline in its initial period then it is given a rank of 0
+      # and period is set to zero
+      if prev_period == None:
+        if period["status"] == "Offline":
+          rankedWell['offline'] = 'Offline'
+          break
+      else:
+        period['rank'] = rankedWell['rank']
+        period['offline'] = rankedWell['offline']
+        rankedWell = rankStatus(period, prev_period)
+        rankedWell = rankMrtll(period, prev_period)
+        rankedWell = rankStability(period, prev_period)
+
+      prev_period = dict(period)
+    
+    # Restore the current conditions for watchlist printing
+    for key in periods[0].keys():
+      rankedWell[key] = periods[0][key]
+    wells.append(rankedWell)
+    
 
 # Generate watchlist
 text_area = None
@@ -114,10 +202,12 @@ td, th {
     text-align: center;
     padding: 8px;
     font-size: 12pt;
+    font-weight: bold;
 }
 
 .red {
-  background-color: #C21807
+  background-color: #e11807;
+  color: #FFFFFF
 }
 
 .orange{
@@ -147,7 +237,10 @@ html_content += "<h2>" + satellite + "</h2> <table> <tr>"
 for header in headers:
   html_content += '<th class="gray">' + header + "</th>"
 html_content += "</tr>"
-# Update with data
+
+
+# Sort wells based on ranked, higher the rank the more important
+wells = sorted(wells, key=lambda k: k['rank'], reverse=True)
 for well in wells:
   html_content += "<tr>"
   html_content += htmlName(well)
