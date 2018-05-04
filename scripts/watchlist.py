@@ -17,6 +17,46 @@ import clr
 clr.AddReference("System.Windows.Forms")
 from System.Windows.Forms import MessageBox
 
+def htmlName(well):
+  return "<td>" + well["name"] + "</td>"
+  
+def htmlStatus(well):
+  if well["status"] == "No Issue":
+    return '<td class="green">' + well["status"] + "</td>"
+  elif well["status"] == "Warning":
+   return '<td class="orange">' + well["status"] + "</td>"
+  elif well["status"] == "Action Needed":
+    return '<td class="red">' + well["status"] + "</td>"
+  else:
+    return '<td class="black">' + well["status"] + "</td>"
+    
+def htmlMrtll(well):
+  if well["mrtll"] == "Yes":
+    return '<td class="green">' + well["mrtll"] + "</td>"
+  elif well["mrtll"] == "No":
+    return '<td class="red">' + well["mrtll"] + "</td>"
+  else:
+    return '<td class="black">' + well["mrtll"] + "</td>"
+
+def htmlConstraint(well):
+  if well["constraint"] == "Offline":
+    return '<td class="black">' + well["constraint"] + "</td>"
+  else:
+    return "<td>" + well["constraint"] + "</td>"
+    
+def htmlStability(well):
+  if well["stability"] == "Stable":
+    return '<td class="green">' + well["stability"] + "</td>"
+  elif well["stability"] == "Close to Unstable":
+    return '<td class="orange">' + well["stability"] + "</td>"
+  elif well["stability"] == "Unstable":
+    return '<td class="red">' + well["stability"] + "</td>"
+  else:
+    return '<td class="black">' +  well["stability"] + "</td>"
+    
+def htmlPeriod(well):
+  return "<td>" + str(well["period"]) + "</td>"
+
 # Getting the data table object
 table_name = "WatchlistData"
 data_table = Document.Data.Tables[table_name]
@@ -70,10 +110,10 @@ table {
 }
 
 td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
+    border: 3px solid #dddddd;
+    text-align: center;
     padding: 8px;
-    font-size: 10pt;
+    font-size: 12pt;
 }
 
 .red {
@@ -93,59 +133,30 @@ td, th {
   color: #FFFFFF;
 }
 
+.gray{
+  background-color: gray;
+}
+
 </style>
 
 """
 
-html_content = html_content + "<h2>" + satellite + "</h2> <table> <tr>" 
+html_content += "<h2>" + satellite + "</h2> <table> <tr>" 
 
 # Generate the header information
 for header in headers:
-  html_content = html_content + "<th>" + header + "</th>"
-html_content = html_content + "</tr>"
+  html_content += '<th class="gray">' + header + "</th>"
+html_content += "</tr>"
 # Update with data
 for well in wells:
-  html_content = html_content + "<tr>"
-  # Well name
-  html_content = html_content + "<td>" + well["name"] + "</td>"
+  html_content += "<tr>"
+  html_content += htmlName(well)
+  html_content += htmlStatus(well)
+  html_content += htmlMrtll(well)
+  html_content += htmlConstraint(well)
+  html_content += htmlStability(well)
+  html_content += htmlPeriod(well)
+  html_content +=  "</tr>"
 
-  # Well status
-  if well["status"] == "No Issue":
-    html_content = html_content + '<td class="green">' + well["status"] + "</td>"
-  elif well["status"] == "Warning":
-    html_content = html_content + '<td class="orange">' + well["status"] + "</td>"
-  elif well["status"] == "Action Needed":
-    html_content = html_content + '<td class="red">' + well["status"] + "</td>"
-  else:
-    html_content = html_content + '<td class="black">' + well["status"] + "</td>"
-  
-  # MRTLL
-  if well["mrtll"] == "Yes":
-    html_content = html_content + '<td class="green">' + well["mrtll"] + "</td>"
-  elif well["mrtll"] == "No":
-    html_content = html_content + '<td class="red">' + well["mrtll"] + "</td>"
-  else:
-    html_content = html_content + '<td class="black">' + well["mrtll"] + "</td>"
-
-  # Constraint
-  if well["constraint"] == "Offline":
-    html_content = html_content + '<td class="black">' + well["constraint"] + "</td>"
-  else:
-    html_content = html_content + "<td>" + well["constraint"] + "</td>"
-
-  # Stability
-  if well["stability"] == "Stable":
-    html_content = html_content + '<td class="green">' + well["stability"] + "</td>"
-  elif well["stability"] == "Close to Unstable":
-    html_content = html_content + '<td class="orange">' + well["stability"] + "</td>"
-  elif well["stability"] == "Unstable":
-    html_content = html_content + '<td class="red">' + well["stability"] + "</td>"
-  else:
-    html_content = html_content + '<td class="black">' +  well["stability"] + "</td>"
-  
-  # Predicted offline period
-  html_content = html_content + "<td>" + str(well["period"]) + "</td>"
-  html_content = html_content + "</tr>"
-
-html_content = html_content + "</table>"
+html_content += "</table>"
 text_area.HtmlContent = html_content
