@@ -12,11 +12,11 @@ from Spotfire.Dxp.Data import *
 from Spotfire.Dxp.Application.Filters import *
 
 # Getting the data table object
-table_name = "Monthly Production information link"
+table_name = "NodalData"
 data_table = Document.Data.Tables[table_name]
 
 # Resets all filters in list
-filters_to_reset = ["WELL_NAME","FIELD_NAME"]
+filters_to_reset = ["Well Name","Satellite"]
 
 # loop through every filter in document and reset if in the filter_to_reset list
 for filtering_scheme in Document.FilteringSchemes:
