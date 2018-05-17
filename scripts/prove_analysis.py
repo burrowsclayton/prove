@@ -16,6 +16,10 @@ def get_plot_page(name_of_page="ProVe Plots"):
   for page in Document.Pages:
     if page.Title == name_of_page:
       return page
+  page = Document.Pages.AddNew()
+  page.AutoConfigure()
+  page.Title = "ProVe Plots"
+  return page
 
 # Getting the data table object
 data_table = Document.Data.Tables["Monthly Production information link"]

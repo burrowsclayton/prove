@@ -96,13 +96,13 @@ for well_name in names:
   vlp.Line.Width = 3 
   vlp.Line.IsBackground = True
 
-  mrtll = scatter_plot.FittingModels.AddVerticalLine(data_table, '[MRTLL]')
+  mrtll = scatter_plot.FittingModels.AddVerticalLine(data_table, '[MRTLL (e3m3/day)]')
   mrtll.Line.Color = Color.FromArgb(255, 165, 0)
   mrtll.Line.CustomDisplayName = "MRTLL"
   mrtll.Line.Width = 3 
   mrtll.Line.IsBackground = False
 
-  msr = scatter_plot.FittingModels.AddVerticalLine(data_table, '[Minimum Stable Rate]')
+  msr = scatter_plot.FittingModels.AddVerticalLine(data_table, '[Minimum Stable Rate (e3m3/day)]')
   msr.Line.Color = Color.FromArgb(255, 138, 43, 226)
   msr.Line.CustomDisplayName = "Minimum Stable Rate"
   msr.Line.Width = 3 
