@@ -10,6 +10,7 @@ Creates the scatter plot
 
 from Spotfire.Dxp.Application.Visuals import *
 from Spotfire.Dxp.Data import *
+from System.Drawing import Color
 
 # Returns the page with the name give
 def get_plot_page(name_of_page="Nodal Plots"):
@@ -82,4 +83,30 @@ for well_name in names:
   scatter_plot.Title = well_name
   scatter_plot.ColorAxis.Expression = "<[Axis.Default.Names]>"
 
+  # Create the curves
+  ipr = scatter_plot.FittingModels.AddColumnValuesLine(data_table, data_table.Columns['Gas Rate (e3m3/day)'], data_table.Columns['IPR (kPag)'])
+  ipr.Line.Color = Color.FromArgb(255, 0, 130, 230)
+  ipr.Line.CustomDisplayName = "IPR"
+  ipr.Line.Width = 3 
+  ipr.Line.IsBackground = True
+
+  vlp = scatter_plot.FittingModels.AddColumnValuesLine(data_table, data_table.Columns['Gas Rate (e3m3/day)'], data_table.Columns['VLP (kPag)'])
+  vlp.Line.Color = Color.FromArgb(255, 0, 160, 90)
+  vlp.Line.CustomDisplayName = "VLP"
+  vlp.Line.Width = 3 
+  vlp.Line.IsBackground = True
+
+  mrtll = scatter_plot.FittingModels.AddVerticalLine(data_table, '[MRTLL]')
+  mrtll.Line.Color = Color.FromArgb(255, 165, 0)
+  mrtll.Line.CustomDisplayName = "MRTLL"
+  mrtll.Line.Width = 3 
+  mrtll.Line.IsBackground = False
+
+  msr = scatter_plot.FittingModels.AddVerticalLine(data_table, '[Minimum Stable Rate]')
+  msr.Line.Color = Color.FromArgb(255, 138, 43, 226)
+  msr.Line.CustomDisplayName = "Minimum Stable Rate"
+  msr.Line.Width = 3 
+  msr.Line.IsBackground = True
+
+scatter_plot.FittingModels.LegendItem.Visible = True
 Document.ActivePageReference = plots_page

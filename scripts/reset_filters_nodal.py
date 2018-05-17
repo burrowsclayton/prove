@@ -16,7 +16,7 @@ table_name = "NodalData"
 data_table = Document.Data.Tables[table_name]
 
 # Resets all filters in list
-filters_to_reset = ["Well Name","Satellite"]
+filters_to_reset = ["Well Name","Satellite", "Date"]
 
 # loop through every filter in document and reset if in the filter_to_reset list
 for filtering_scheme in Document.FilteringSchemes:
