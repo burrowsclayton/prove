@@ -11,9 +11,6 @@ Library/Subsurface-Analytics/Development/Coopprod/Information links/Monthly Prod
 ## Scripts
 The scripts are written in [IronPython](http://ironpython.net/). Refer to the [Spotfire v7.6 API](https://docs.tibco.com/pub/doc_remote/spotfire/7.6.0/doc/api/) for details about function calls within the scripts. 
 
-## Website
-[ProVe Analysis](https://joseph-tripodi.github.io/prove-website/)
-
 ## Authors
 - Joseph Tripodi
 
