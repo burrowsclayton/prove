@@ -217,7 +217,9 @@ td, th {
     text-align: center;
     padding: 8px;
     font-size: 12pt;
-    font-weight: bold;
+    background-color: #444444;
+    color: white;
+    border-color: black;
 }
 
 .red {
@@ -226,11 +228,11 @@ td, th {
 }
 
 .orange{
-  background-color: #FEC34D
+  background-color: #ED9000
 }
 
 .green {
-  background-color: #00CC00
+  background-color: #00aa00
 }
 
 .black{
