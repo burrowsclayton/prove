@@ -1,2 +1,0 @@
-# nodal
-Nodal project
